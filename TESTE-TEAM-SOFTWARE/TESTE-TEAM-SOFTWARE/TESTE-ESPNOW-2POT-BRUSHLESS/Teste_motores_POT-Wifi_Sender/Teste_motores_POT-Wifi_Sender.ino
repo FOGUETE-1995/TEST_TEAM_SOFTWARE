@@ -25,10 +25,23 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 
 
 #define direction 32	// está marcado como D32 no DevKit
-#define speed 39		// está marcado como VN no DevKit
+#define speed 39		  // está marcado como VN no DevKit
+
+#define LED 2   //LED para verificação de status da comunicação
+#define CAL 27  //Pino usado para calibrar os joysticks
 
 int valorDir = 0;
 int valorSpd = 0;
+
+int menorLX;
+int menorMidLX;
+int maiorMidLX;
+int maiorLX;
+
+int menorRX;
+int menorMidRX;
+int maiorMidRX;
+int maiorRX;
 
 /*
 PINOS UTILIZADOS
@@ -38,6 +51,11 @@ PINO 32 -- DIREITA OU ESQUERDA (potenciômetro)
 PINO 39 -- FRENTE OU TRÁS (potenciômetro)
 
 */
+
+void calibracao(){
+  
+
+}
  
 void setup() {
   // Inicia o monitor Serial
@@ -74,16 +92,16 @@ void loop() {
   valorDir = analogRead(direction);
   valorSpd = analogRead(speed);
 
-  mySpd.spdInt = map(valorSpd, 0, 4095, 0, 100);
+  mySpd.spdInt = map(valorSpd, 0, 4095, -100, 100);
   valorDir = map(valorDir, 0, 4095, -100, 100);
 
 
   if (valorDir > 10){
       mySpd.spdLeft = mySpd.spdInt;
-      mySpd.spdRight = mySpd.spdInt - mySpd.spdInt*valorDir/100;
+      mySpd.spdRight = mySpd.spdInt - mySpd.spdInt*(valorDir/100);
       mySpd.dir = "RIGHT";
   }else if(valorDir < -10){
-      mySpd.spdLeft = mySpd.spdInt + mySpd.spdInt*valorDir/100;
+      mySpd.spdLeft = mySpd.spdInt + mySpd.spdInt*(valorDir/100);
       mySpd.spdRight = mySpd.spdInt;
       mySpd.dir = "LEFT";
   }else{
