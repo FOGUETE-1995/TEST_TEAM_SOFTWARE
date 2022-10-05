@@ -5,10 +5,10 @@
 //Estrutura damensagem que será enviada
 //DEVE SER A MESMA ESTRUTURA NO EMISSOR
 typedef struct struct_message {
-  int rightSpd; 		//recebe o valor da velocidade da direita
-  int leftSpd; 		//recebe o valor da velocidade da esquerda
+	int rightSpd; 	//recebe o valor da velocidade da direita
+	int leftSpd; 	//recebe o valor da velocidade da esquerda
 	String Dir;	//recebe o valor da direção
-	int intSpd;			//recebe o valor da intensidade da velocidade
+	int val;
 } struct_message;
 
 
@@ -16,26 +16,27 @@ struct_message myData;		//Cria um objeto chamado myData
 
 //Função de callback chamada ao receber algum dado
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-  memcpy(&myData, incomingData, sizeof(myData));
-  Serial.print("Bytes received: ");
-  Serial.print(len);
-  Serial.print("\t");
-  Serial.print("VD: ");
-  Serial.print(myData.rightSpd);
-  Serial.print("\t");
-  Serial.print("VE: ");
-  Serial.print(myData.leftSpd);
-  Serial.print("\t");
-  Serial.print("|INT: ");
-  Serial.print(myData.intSpd);
-  Serial.print("\t");
-  Serial.print("DIR: ");
-  Serial.print(myData.Dir);
-  Serial.println();
+	memcpy(&myData, incomingData, sizeof(myData));
+	Serial.print("Bytes received: ");
+	Serial.print(len);
+	Serial.print("\t");
+	Serial.print("VD: ");
+	Serial.print(myData.rightSpd);
+	Serial.print("\t");
+	Serial.print("VE: ");
+	Serial.print(myData.leftSpd);
+	Serial.print("\t");
+	Serial.print("DIR: ");
+	Serial.print(myData.Dir);
+	Serial.println();
+	
+	lastVal = atualVal;
+	atualVal = myData.val;
 }
 
 #define ESCPinRight 17	// está marcado como TX2 no DevKit
 #define ESCPinLeft 16	// está marcado como RX2 no DevKit
+#define LED 2
 
 
 Servo myESCRight;      //Cria um objeto para controlar o Servo, no caso irá controlar a velocidade do motor e sentido de rotação
@@ -54,9 +55,14 @@ PINO 17 - RODA DIREITA
 int SpdRight = 0;
 int SpdLeft = 0;
 
+int atuaVal = 0;
+int lastVal = 0;
+
 void setup() {
   // Inicia o monitor Serial
   Serial.begin(115200);
+  
+  pinMode(LED, OUTPUT);
  
   // Configura o ESP32 como um Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -82,9 +88,18 @@ void setup() {
  
 void loop() {
 	
-  SpdRight = map(myData.rightSpd, 0, 100, 0, 180); 	// Realiza a conversão para valores entre 0 e 180 para o motor da direita
-  SpdLeft = map(myData.leftSpd, 0, 100, 0, 180);		// Realiza a conversão para valores entre 0 e 180 para o motor da esquerda
-
-  myESCRight.write(SpdRight); 	// Envia o valor convertido para o ESC da direita
-  myESCLeft.write(SpdLeft); 	// Envia o valor convertido para o ESC da esquerda
+	if (atualVal == lastVal){
+		SpdRight = 0;
+  		SpdLeft = 0;
+		digitalWrite(LED, LOW);
+	}else{
+		SpdRight = map(myData.rightSpd, -100, 100, 0, 180); 	// Realiza a conversão para valores entre 0 e 180 para o motor da direita
+  		SpdLeft = map(myData.leftSpd, -100, 100, 0, 180);	// Realiza a conversão para valores entre 0 e 180 para o motor da esquerda
+		digitalWrite(LED, HIGH);
+	}
+	
+	myESCRight.write(SpdRight); 	// Envia o valor convertido para o ESC da direita
+  	myESCLeft.write(SpdLeft); 	// Envia o valor convertido para o ESC da esquerda
+	
+  
 }
