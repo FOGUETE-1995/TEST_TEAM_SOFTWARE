@@ -90,11 +90,11 @@ void calibracao(){
                 var1 = analogRead(potPinD);
 
                 if (menor == -1 || var1 < menor){
-                  menor = var1;
+                    menor = var1;
                 }
 
                 if (maior == 0 || var1 > maior){
-                  maior = var1;
+                    maior = var1;
                 }
             }else { //Grava os valores identificados e vai para a próxima etapa
                 menorMidLX = menor;
@@ -120,9 +120,9 @@ void calibracao(){
         			}
         
       			}else {//Grava o valor identificado e vai para a próxima etapa
-        			maiorLX = maior;
-        			temp = 0;
-        			etapa = 2;
+        			  maiorLX = maior;
+        			  temp = 0;
+        			  etapa = 2;
       			}	
       			break;
      
@@ -138,11 +138,11 @@ void calibracao(){
                 var1 = analogRead(potPinD);
 
                 if (menor == -1 || var1 < menor){
-                  menor = var1;
+                    menor = var1;
                 }
 
             }else {//Grava o valor identificado e vai para a próxima etapa
-              menorLX = menor;
+                menorLX = menor;
                 temp = 0;
                 etapa = 3;
             }	
@@ -160,11 +160,11 @@ void calibracao(){
                 var1 = analogRead(potPinV);
 
                 if (menor == -1 || var1 < menor){
-                  menor = var1;
+                    menor = var1;
                 }
 
                 if (maior == 0 || var1 > maior){
-                  maior = var1;
+                    maior = var1;
                 }
             }else {//Grava os valores identificados e vai para a próxima etapa
                 menorMidRY = menor;
@@ -186,7 +186,7 @@ void calibracao(){
                 var1 = analogRead(potPinV);
 
                 if (maior == 0 || var1 > maior){
-                  maior = var1;
+                    maior = var1;
                 }
             }else {//Grava o valor identificado e vai para a próxima etapa
                 maiorRY = maior;
@@ -195,27 +195,29 @@ void calibracao(){
             }	
             break;
     
+        
         case 5:
             //Deixe o joystick relacionado a velocidade na posição onde será enviado o menor valor para o controlador
             //O software irá detectar o valor infomado
       			if (millis() - temp <= 3000){
-                  	Serial.print("calibrando velocidade MIN...");
-                  	Serial.print("\t");
-                  	Serial.println((millis()-temp)/1000);
+                Serial.print("calibrando velocidade MIN...");
+                Serial.print("\t");
+                Serial.println((millis()-temp)/1000);
 
-                  	var1 = analogRead(potPinV);
+                var1 = analogRead(potPinV);
 
-                  	if (menor == -1 || var1 < menor){
-                    	menor = var1;
-                  	}
-
-                }else {//Grava o valor identificado e vai para a próxima etapa
-                  	menorRY = menor;
-                  	temp = 0;
-                  	etapa = 6;
+                if (menor == -1 || var1 < menor){
+                    menor = var1;
                 }
-            	break;
+
+            }else {//Grava o valor identificado e vai para a próxima etapa
+                menorRY = menor;
+                temp = 0;
+                etapa = 6;
+            }
+            break;
       
+        
       	case 6:
             //Finaliza a calibração e mostra os valores coletados
       			Serial.println("FINALIZADO");
