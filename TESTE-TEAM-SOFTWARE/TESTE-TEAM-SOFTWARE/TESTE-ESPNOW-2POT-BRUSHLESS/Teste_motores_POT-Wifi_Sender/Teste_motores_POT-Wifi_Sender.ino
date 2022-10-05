@@ -80,170 +80,170 @@ void calibracao(){
   	switch(etapa){
       	
       	case 0:
-            //Deixe o joystick relacionado a direção solto sem mexê-lo
-            //O software irá detectar a oscilação máxima e mínima do joystick
-            if (millis() - temp <= 3000){
-                Serial.print("calibrando direcao centro...");
-                Serial.print("\t");
-                Serial.println((millis()-temp)/1000);
+              //Deixe o joystick relacionado a direção solto sem mexê-lo
+              //O software irá detectar a oscilação máxima e mínima do joystick
+              if (millis() - temp <= 3000){
+                  Serial.print("calibrando direcao centro...");
+                  Serial.print("\t");
+                  Serial.println((millis()-temp)/1000);
 
-                var1 = analogRead(potPinD);
+                  var1 = analogRead(potPinD);
 
-                if (menor == -1 || var1 < menor){
-                    menor = var1;
-                }
+                  if (menor == -1 || var1 < menor){
+                      menor = var1;
+                  }
 
-                if (maior == 0 || var1 > maior){
-                    maior = var1;
-                }
-            }else { //Grava os valores identificados e vai para a próxima etapa
-                menorMidLX = menor;
-                maiorMidLX = maior;
-                temp = 0;
-                etapa = 1;
-            }
-            break;
+                  if (maior == 0 || var1 > maior){
+                      maior = var1;
+                  }
+              }else { //Grava os valores identificados e vai para a próxima etapa
+                  menorMidLX = menor;
+                  maiorMidLX = maior;
+                  temp = 0;
+                  etapa = 1;
+              }
+              break;
       
       
-     	case 1:
-            //Deixe o joystick relacionado a direção na posição onde será enviado o maior valor para o controlador
-            //O software irá detectar o valor infomado
-      			if (millis() - temp <= 3000){
-        			Serial.print("calibrando direcao MAX...");
-        			Serial.print("\t");
-        			Serial.println((millis()-temp)/1000);
-        
-        			var1 = analogRead(potPinD);
-        
-        			if (maior == 0 || var1 > maior){
-          				maior = var1;
-        			}
-        
-      			}else {//Grava o valor identificado e vai para a próxima etapa
-        			  maiorLX = maior;
-        			  temp = 0;
-        			  etapa = 2;
-      			}	
-      			break;
+     	  case 1:
+              //Deixe o joystick relacionado a direção na posição onde será enviado o maior valor para o controlador
+              //O software irá detectar o valor infomado
+              if (millis() - temp <= 3000){
+                  Serial.print("calibrando direcao MAX...");
+                  Serial.print("\t");
+                  Serial.println((millis()-temp)/1000);
+
+                  var1 = analogRead(potPinD);
+
+                  if (maior == 0 || var1 > maior){
+                      maior = var1;
+                  }
+
+              }else {//Grava o valor identificado e vai para a próxima etapa
+                  maiorLX = maior;
+                  temp = 0;
+                  etapa = 2;
+              }	
+              break;
      
       
-     	case 2:
-            //Deixe o joystick relacionado a direção na posição onde será enviado o menor valor para o controlador
-            //O software irá detectar o valor infomado
-            if (millis() - temp <= 3000){
-                Serial.print("calibrando direcao MIN...");
-                Serial.print("\t");
-                Serial.println((millis()-temp)/1000);
+     	  case 2:
+              //Deixe o joystick relacionado a direção na posição onde será enviado o menor valor para o controlador
+              //O software irá detectar o valor infomado
+              if (millis() - temp <= 3000){
+                  Serial.print("calibrando direcao MIN...");
+                  Serial.print("\t");
+                  Serial.println((millis()-temp)/1000);
 
-                var1 = analogRead(potPinD);
+                  var1 = analogRead(potPinD);
 
-                if (menor == -1 || var1 < menor){
-                    menor = var1;
-                }
+                  if (menor == -1 || var1 < menor){
+                      menor = var1;
+                  }
 
-            }else {//Grava o valor identificado e vai para a próxima etapa
-                menorLX = menor;
-                temp = 0;
-                etapa = 3;
-            }	
-            break;
+              }else {//Grava o valor identificado e vai para a próxima etapa
+                  menorLX = menor;
+                  temp = 0;
+                  etapa = 3;
+              }	
+              break;
       
       
-     	case 3:
-            //Deixe o joystick relacionado a velocidade solto sem mexê-lo
-            //O software irá detectar a oscilação máxima e mínima do joystick
-            if (millis() - temp <= 3000){
-                Serial.print("calibrando velocidade centro...");
-                Serial.print("\t");
-                Serial.println((millis()-temp)/1000);
+     	  case 3:
+              //Deixe o joystick relacionado a velocidade solto sem mexê-lo
+              //O software irá detectar a oscilação máxima e mínima do joystick
+              if (millis() - temp <= 3000){
+                  Serial.print("calibrando velocidade centro...");
+                  Serial.print("\t");
+                  Serial.println((millis()-temp)/1000);
 
-                var1 = analogRead(potPinV);
+                  var1 = analogRead(potPinV);
 
-                if (menor == -1 || var1 < menor){
-                    menor = var1;
-                }
+                  if (menor == -1 || var1 < menor){
+                      menor = var1;
+                  }
 
-                if (maior == 0 || var1 > maior){
-                    maior = var1;
-                }
-            }else {//Grava os valores identificados e vai para a próxima etapa
-                menorMidRY = menor;
-                maiorMidRY = maior;
-                temp = 0;
-                etapa = 4;
-            }	
-      			break;
+                  if (maior == 0 || var1 > maior){
+                      maior = var1;
+                  }
+              }else {//Grava os valores identificados e vai para a próxima etapa
+                  menorMidRY = menor;
+                  maiorMidRY = maior;
+                  temp = 0;
+                  etapa = 4;
+              }	
+              break;
       
     
         case 4:
-            //Deixe o joystick relacionado a velocidade na posição onde será enviado o maior valor para o controlador
-            //O software irá detectar o valor infomado
-            if (millis() - temp <= 3000){
-                Serial.print("calibrando velocidade MAX...");
-                Serial.print("\t");
-                Serial.println((millis()-temp)/1000);
+              //Deixe o joystick relacionado a velocidade na posição onde será enviado o maior valor para o controlador
+              //O software irá detectar o valor infomado
+              if (millis() - temp <= 3000){
+                  Serial.print("calibrando velocidade MAX...");
+                  Serial.print("\t");
+                  Serial.println((millis()-temp)/1000);
 
-                var1 = analogRead(potPinV);
+                  var1 = analogRead(potPinV);
 
-                if (maior == 0 || var1 > maior){
-                    maior = var1;
-                }
-            }else {//Grava o valor identificado e vai para a próxima etapa
-                maiorRY = maior;
-                temp = 0;
-                etapa = 5;
-            }	
-            break;
-    
-        
+                  if (maior == 0 || var1 > maior){
+                      maior = var1;
+                  }
+              }else {//Grava o valor identificado e vai para a próxima etapa
+                  maiorRY = maior;
+                  temp = 0;
+                  etapa = 5;
+              }	
+              break;
+
+
         case 5:
-            //Deixe o joystick relacionado a velocidade na posição onde será enviado o menor valor para o controlador
-            //O software irá detectar o valor infomado
-      			if (millis() - temp <= 3000){
-                Serial.print("calibrando velocidade MIN...");
-                Serial.print("\t");
-                Serial.println((millis()-temp)/1000);
+              //Deixe o joystick relacionado a velocidade na posição onde será enviado o menor valor para o controlador
+              //O software irá detectar o valor infomado
+              if (millis() - temp <= 3000){
+                  Serial.print("calibrando velocidade MIN...");
+                  Serial.print("\t");
+                  Serial.println((millis()-temp)/1000);
 
-                var1 = analogRead(potPinV);
+                  var1 = analogRead(potPinV);
 
-                if (menor == -1 || var1 < menor){
-                    menor = var1;
-                }
+                  if (menor == -1 || var1 < menor){
+                      menor = var1;
+                  }
 
-            }else {//Grava o valor identificado e vai para a próxima etapa
-                menorRY = menor;
-                temp = 0;
-                etapa = 6;
-            }
-            break;
+              }else {//Grava o valor identificado e vai para a próxima etapa
+                  menorRY = menor;
+                  temp = 0;
+                  etapa = 6;
+              }
+              break;
       
         
       	case 6:
-            //Finaliza a calibração e mostra os valores coletados
-      			Serial.println("FINALIZADO");
-      
-      			Serial.print("LX: ");
-      			Serial.print(menorLX);
-      			Serial.print("\t");
-      			Serial.print(menorMidLX);
-      			Serial.print("\t");
-      			Serial.print(maiorMidLX);
-      			Serial.print("\t");
-      			Serial.println(maiorLX);
-      
-      			Serial.print("RY: ");
-      			Serial.print(menorRY);
-      			Serial.print("\t");
-      			Serial.print(menorMidRY);
-      			Serial.print("\t");
-      			Serial.print(maiorMidRY);
-      			Serial.print("\t");
-      			Serial.println(maiorRY);
-      
-            
-      			etapa = 0;
-      			cal = 0;
-      			break;
+              //Finaliza a calibração e mostra os valores coletados
+              Serial.println("FINALIZADO");
+
+              Serial.print("LX: ");
+              Serial.print(menorLX);
+              Serial.print("\t");
+              Serial.print(menorMidLX);
+              Serial.print("\t");
+              Serial.print(maiorMidLX);
+              Serial.print("\t");
+              Serial.println(maiorLX);
+
+              Serial.print("RY: ");
+              Serial.print(menorRY);
+              Serial.print("\t");
+              Serial.print(menorMidRY);
+              Serial.print("\t");
+              Serial.print(maiorMidRY);
+              Serial.print("\t");
+              Serial.println(maiorRY);
+
+
+              etapa = 0;
+              cal = 0;
+              break;
     }
   }
 }
