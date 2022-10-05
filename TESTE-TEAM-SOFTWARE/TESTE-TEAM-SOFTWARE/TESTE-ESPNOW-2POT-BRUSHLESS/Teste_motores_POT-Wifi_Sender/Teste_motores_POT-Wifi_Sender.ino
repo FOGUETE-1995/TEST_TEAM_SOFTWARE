@@ -77,7 +77,7 @@ void calibracao(){
       maior = 0;
   }else{
       //Cada etapa da calibração dura 3s, o processo todo dura 18s
-  	  switch(etapa){
+      switch(etapa){
           case 0:
               //Deixe o joystick relacionado a direção solto sem mexê-lo
               //O software irá detectar a oscilação máxima e mínima do joystick
