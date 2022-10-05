@@ -72,14 +72,13 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 void calibracao(){
   //Ao iniciar, atualizamos o valor de "temp" e fazemos um "reset" na outras variáveis
   if (temp == 0){
-    temp = millis();
-    menor = -1;
-    maior = 0;
+      temp = millis();
+      menor = -1;
+      maior = 0;
   }else{
-    //Cada etapa da calibração dura 3s, o processo todo dura 18s
-  	switch(etapa){
-      	
-      	case 0:
+      //Cada etapa da calibração dura 3s, o processo todo dura 18s
+  	  switch(etapa){
+          case 0:
               //Deixe o joystick relacionado a direção solto sem mexê-lo
               //O software irá detectar a oscilação máxima e mínima do joystick
               if (millis() - temp <= 3000){
@@ -103,9 +102,8 @@ void calibracao(){
                   etapa = 1;
               }
               break;
-      
-      
-     	  case 1:
+        
+          case 1:
               //Deixe o joystick relacionado a direção na posição onde será enviado o maior valor para o controlador
               //O software irá detectar o valor infomado
               if (millis() - temp <= 3000){
@@ -125,9 +123,8 @@ void calibracao(){
                   etapa = 2;
               }	
               break;
-     
-      
-     	  case 2:
+        
+          case 2:
               //Deixe o joystick relacionado a direção na posição onde será enviado o menor valor para o controlador
               //O software irá detectar o valor infomado
               if (millis() - temp <= 3000){
@@ -147,9 +144,8 @@ void calibracao(){
                   etapa = 3;
               }	
               break;
-      
-      
-     	  case 3:
+        
+          case 3:
               //Deixe o joystick relacionado a velocidade solto sem mexê-lo
               //O software irá detectar a oscilação máxima e mínima do joystick
               if (millis() - temp <= 3000){
@@ -173,9 +169,8 @@ void calibracao(){
                   etapa = 4;
               }	
               break;
-      
-    
-        case 4:
+        
+          case 4:
               //Deixe o joystick relacionado a velocidade na posição onde será enviado o maior valor para o controlador
               //O software irá detectar o valor infomado
               if (millis() - temp <= 3000){
@@ -194,9 +189,8 @@ void calibracao(){
                   etapa = 5;
               }	
               break;
-
-
-        case 5:
+          
+          case 5:
               //Deixe o joystick relacionado a velocidade na posição onde será enviado o menor valor para o controlador
               //O software irá detectar o valor infomado
               if (millis() - temp <= 3000){
@@ -216,9 +210,8 @@ void calibracao(){
                   etapa = 6;
               }
               break;
-      
         
-      	case 6:
+          case 6:
               //Finaliza a calibração e mostra os valores coletados
               Serial.println("FINALIZADO");
 
