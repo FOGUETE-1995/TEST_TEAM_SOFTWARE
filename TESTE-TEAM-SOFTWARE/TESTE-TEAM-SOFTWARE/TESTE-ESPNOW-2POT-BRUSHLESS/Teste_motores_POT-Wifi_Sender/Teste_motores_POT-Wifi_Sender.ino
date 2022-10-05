@@ -64,7 +64,7 @@ esp_now_peer_info_t peerInfo;	//Cria um objeto chamado peerInfo
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   //Last Packet Send Status
   if (status == ESP_NOW_SEND_SUCCESS){
-      statusCom += 1; //Delivery Success
+      statusCom = 1; //Delivery Success
   }else{
       statusCom = 0; //Delivery Fail
   }
