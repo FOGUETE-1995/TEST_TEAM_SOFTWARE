@@ -11,7 +11,9 @@ int valorDir = 0;
 int valorSpd = 0;
 
 int statusCom = 0; //status da comunicação
-int validacao = 0; //contador para validar a comunicação
+int contValidacao = 0; //contador para validar a comunicação
+int lastValidacao = 0 //estado da ultima validação
+int atualValidacao = 0 //estado atual da validação
 
 //---------- VARIÁVEIS DE CALIBRAÇÃO ---------------- //
 int cal = 0;
@@ -62,10 +64,9 @@ esp_now_peer_info_t peerInfo;	//Cria um objeto chamado peerInfo
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   //Last Packet Send Status
   if (status == ESP_NOW_SEND_SUCCESS){
-      statusCom = 1; //Delivery Success
+      statusCom += 1; //Delivery Success
   }else{
       statusCom = 0; //Delivery Fail
-      validacao = 0;
   }
 }
 
@@ -279,14 +280,19 @@ void setup() {
  
 void loop() {
   
-  if (digitalRead(CAL) == 1 && temp == 0 && cal == 0){
+  if (digitalRead(CAL) == 1 && temp == 0 && cal == 0){ //inicializa a contagem de tempo para começar a calbração
       temp = millis(); 
-  }else if(digitalRead(CAL) == 1 && (millis() - temp) > 3000 && cal == 0){
+  }else if (digitalRead(CAL) == 1 && (millis() - temp) > 3000 && cal == 0){ 
+      //Após 3 segundos com o botão pressionado, é dado inicio na calibração
       cal = 1;
       temp = 0;
   }else if (digitalRead(CAL) == 1 && cal == 0){
+      //Mostra na tela quanto tempo o botão está sendo pressionado, antes de entrar na calibração
       Serial.print("iniciando calibracao...");
       Serial.println((millis()-temp)/1000);  
+  }else if (digitalRead(CAL) == 0 && cal == 0){
+      //Se soltar o botão antes dos 3s, o tempo é zerado
+      temp = 0;
   }
   
 
@@ -345,18 +351,29 @@ void loop() {
         esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &mySpd, sizeof(mySpd));
 
         if (result == ESP_OK && statusCom == 1) {
-            statusCom = 2; //Success
-            validacao += 1;
-        }
-        else {
-            statusCom = 0; //Error
-            validacao = 0;
+            //Success
+            atualValidacao = 1;
+        }else{
+            //Error
+            statusCom = 0;
+            atualValidacao = 0;
         }
     
-        if (validacao == 3){
-            digital.Write(LED, HIGH);
+        if (atualValidacao == lastValidacao) {
+            contValidacao += 1;
         }else{
+            contValidacao = 1;
+            lastValidacao = atualValidacao;
+        }
+    
+        if (contValidacao == 3 && lastValidacao == 1){
+            digital.Write(LED, HIGH);
+            contValidacao = 0;
+        }
+    
+        if (contValidacao == 3 && lastValidacao == 0){
             digital.Write(LED, LOW);
+            contValidacao = 0;
         }
   }
 }
