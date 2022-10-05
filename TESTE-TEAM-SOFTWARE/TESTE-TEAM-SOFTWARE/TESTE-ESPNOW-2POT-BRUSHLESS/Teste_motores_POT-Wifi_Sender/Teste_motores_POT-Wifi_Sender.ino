@@ -279,13 +279,14 @@ void setup() {
  
 void loop() {
   
-  if (digitalRead(CAL) == 1 && temp == 0){
+  if (digitalRead(CAL) == 1 && temp == 0 && cal == 0){
       temp = millis(); 
-  }else if(digitalRead(CAL) == 1 && (millis() - temp) > 3000){
+  }else if(digitalRead(CAL) == 1 && (millis() - temp) > 3000 && cal == 0){
       cal = 1;
       temp = 0;
-  }else if (digitalRead(CAL) == 0){
-      cal = 0; 
+  }else if (digitalRead(CAL) == 1 && cal == 0){
+      Serial.print("iniciando calibracao...");
+      Serial.println((millis()-temp)/1000);  
   }
   
 
