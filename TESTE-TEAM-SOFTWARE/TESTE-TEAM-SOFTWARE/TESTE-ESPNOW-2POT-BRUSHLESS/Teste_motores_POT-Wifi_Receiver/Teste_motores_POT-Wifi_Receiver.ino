@@ -2,6 +2,27 @@
 #include <WiFi.h>
 #include <ESP32Servo.h> 
 
+#define ESCPinRight 17	// está marcado como TX2 no DevKit
+#define ESCPinLeft 16	// está marcado como RX2 no DevKit
+#define LED 2
+
+
+Servo myESCRight;      //Cria um objeto para controlar o Servo, no caso irá controlar a velocidade do motor e sentido de rotação
+Servo myESCLeft;       //Cria um objeto para controlar o Servo, no caso irá controlar a velocidade do motor e sentido de rotação
+ 
+ 
+/*
+PINOS UTILIZADOS
+SAÍDAS
+PINO 16 - RODA ESQUERDA
+PINO 17 - RODA DIREITA
+*/
+
+int SpdRight = 0;
+int SpdLeft = 0;
+
+int lastVal = 0;
+
 //Estrutura damensagem que será enviada
 //DEVE SER A MESMA ESTRUTURA NO EMISSOR
 typedef struct struct_message {
@@ -30,33 +51,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 	Serial.print(myData.Dir);
 	Serial.println();
 	
-	lastVal = atualVal;
-	atualVal = myData.val;
 }
-
-#define ESCPinRight 17	// está marcado como TX2 no DevKit
-#define ESCPinLeft 16	// está marcado como RX2 no DevKit
-#define LED 2
-
-
-Servo myESCRight;      //Cria um objeto para controlar o Servo, no caso irá controlar a velocidade do motor e sentido de rotação
-Servo myESCLeft;       //Cria um objeto para controlar o Servo, no caso irá controlar a velocidade do motor e sentido de rotação
- 
- 
-/*
-PINOS UTILIZADOS
-
-SAÍDAS
-PINO 16 - RODA ESQUERDA
-PINO 17 - RODA DIREITA
-
-*/
-
-int SpdRight = 0;
-int SpdLeft = 0;
-
-int atuaVal = 0;
-int lastVal = 0;
 
 void setup() {
   // Inicia o monitor Serial
@@ -88,18 +83,20 @@ void setup() {
  
 void loop() {
 	
-	if (atualVal == lastVal){
-		SpdRight = 0;
-  		SpdLeft = 0;
-		digitalWrite(LED, LOW);
+	if (myData.val == lastVal){
+		SpdRight = map(0, -100, 100, 0, 180);
+  	SpdLeft = map(0, -100, 100, 0, 180);
+    digitalWrite(LED, LOW);
 	}else{
 		SpdRight = map(myData.rightSpd, -100, 100, 0, 180); 	// Realiza a conversão para valores entre 0 e 180 para o motor da direita
-  		SpdLeft = map(myData.leftSpd, -100, 100, 0, 180);	// Realiza a conversão para valores entre 0 e 180 para o motor da esquerda
+  	SpdLeft = map(myData.leftSpd, -100, 100, 0, 180);	// Realiza a conversão para valores entre 0 e 180 para o motor da esquerda
 		digitalWrite(LED, HIGH);
 	}
+
+  lastVal = myData.val;
 	
 	myESCRight.write(SpdRight); 	// Envia o valor convertido para o ESC da direita
-  	myESCLeft.write(SpdLeft); 	// Envia o valor convertido para o ESC da esquerda
+  myESCLeft.write(SpdLeft); 	// Envia o valor convertido para o ESC da esquerda
 	
   
 }
