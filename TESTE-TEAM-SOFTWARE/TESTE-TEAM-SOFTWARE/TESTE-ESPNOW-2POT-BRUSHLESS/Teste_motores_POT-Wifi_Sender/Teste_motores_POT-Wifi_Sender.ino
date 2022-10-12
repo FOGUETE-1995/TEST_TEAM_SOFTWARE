@@ -1,8 +1,8 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-#define direction 32	// está marcado como D32 no DevKit
-#define speed 39		  // está marcado como VN no DevKit
+#define potPinD 32	// está marcado como D32 no DevKit
+#define potPinV 39		  // está marcado como VN no DevKit
 
 #define LED 2   //LED para verificação de status da comunicação
 #define CAL 27  //Pino usado para calibrar os joysticks
@@ -12,8 +12,8 @@ int valorSpd = 0;
 
 int statusCom = 0; //status da comunicação
 int contValidacao = 0; //contador para validar a comunicação
-int lastValidacao = 0 //estado da ultima validação
-int atualValidacao = 0 //estado atual da validação
+int lastValidacao = 0; //estado da ultima validação
+int atualValidacao = 0; //estado atual da validação
 
 //---------- VARIÁVEIS DE CALIBRAÇÃO ---------------- //
 int cal = 0;
@@ -24,25 +24,23 @@ int menor = -1;
 int var1 = 0;
 int maior = 0;
 
-int menorLX;
-int menorMidLX;
-int maiorMidLX;
-int maiorLX;
+int menorLX = 0;
+int menorMidLX = 1450;
+int maiorMidLX = 1900;
+int maiorLX = 4095;
 
-int menorRX;
-int menorMidRX;
-int maiorMidRX;
-int maiorRX;
+int menorRY = 0;
+int menorMidRY = 1450;
+int maiorMidRY = 1900;
+int maiorRY = 4095;
 //---------- ----------------------- ---------------- //
 
 
 /*
 PINOS UTILIZADOS
-
 ENTRADAS
 PINO 32 -- DIREITA OU ESQUERDA (potenciômetro)
 PINO 39 -- FRENTE OU TRÁS (potenciômetro)
-
 */
 
 uint8_t broadcastAddress[] = {0xB8, 0xD6, 0x1A, 0xAA, 0x2D, 0xFC}; //COLOQUE os valores do endereço MAC do receptor
@@ -53,6 +51,7 @@ typedef struct struct_message {
   int spdRight;
   int spdLeft;
   String dir;
+  int cont;
 } struct_message;
 
 
@@ -82,7 +81,7 @@ void calibracao(){
           case 0:
               //Deixe o joystick relacionado a direção solto sem mexê-lo
               //O software irá detectar a oscilação máxima e mínima do joystick
-              if (millis() - temp <= 3000){
+              if (millis() - temp <= 5000){
                   Serial.print("calibrando direcao centro...");
                   Serial.print("\t");
                   Serial.println((millis()-temp)/1000);
@@ -107,7 +106,7 @@ void calibracao(){
           case 1:
               //Deixe o joystick relacionado a direção na posição onde será enviado o maior valor para o controlador
               //O software irá detectar o valor infomado
-              if (millis() - temp <= 3000){
+              if (millis() - temp <= 5000){
                   Serial.print("calibrando direcao MAX...");
                   Serial.print("\t");
                   Serial.println((millis()-temp)/1000);
@@ -128,7 +127,7 @@ void calibracao(){
           case 2:
               //Deixe o joystick relacionado a direção na posição onde será enviado o menor valor para o controlador
               //O software irá detectar o valor infomado
-              if (millis() - temp <= 3000){
+              if (millis() - temp <= 5000){
                   Serial.print("calibrando direcao MIN...");
                   Serial.print("\t");
                   Serial.println((millis()-temp)/1000);
@@ -149,7 +148,7 @@ void calibracao(){
           case 3:
               //Deixe o joystick relacionado a velocidade solto sem mexê-lo
               //O software irá detectar a oscilação máxima e mínima do joystick
-              if (millis() - temp <= 3000){
+              if (millis() - temp <= 5000){
                   Serial.print("calibrando velocidade centro...");
                   Serial.print("\t");
                   Serial.println((millis()-temp)/1000);
@@ -174,7 +173,7 @@ void calibracao(){
           case 4:
               //Deixe o joystick relacionado a velocidade na posição onde será enviado o maior valor para o controlador
               //O software irá detectar o valor infomado
-              if (millis() - temp <= 3000){
+              if (millis() - temp <= 5000){
                   Serial.print("calibrando velocidade MAX...");
                   Serial.print("\t");
                   Serial.println((millis()-temp)/1000);
@@ -194,7 +193,7 @@ void calibracao(){
           case 5:
               //Deixe o joystick relacionado a velocidade na posição onde será enviado o menor valor para o controlador
               //O software irá detectar o valor infomado
-              if (millis() - temp <= 3000){
+              if (millis() - temp <= 5000){
                   Serial.print("calibrando velocidade MIN...");
                   Serial.print("\t");
                   Serial.println((millis()-temp)/1000);
@@ -249,8 +248,8 @@ void setup() {
   pinMode(CAL, INPUT);
   pinMode(LED, OUTPUT);
   
-  pinMode(direction, INPUT);
-  pinMode(speed, INPUT);
+  pinMode(potPinD, INPUT);
+  pinMode(potPinV, INPUT);
  
   // Configura o ESP32 como um Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -282,7 +281,7 @@ void loop() {
   
   if (digitalRead(CAL) == 1 && temp == 0 && cal == 0){ //inicializa a contagem de tempo para começar a calbração
       temp = millis(); 
-  }else if (digitalRead(CAL) == 1 && (millis() - temp) > 3000 && cal == 0){ 
+  }else if (digitalRead(CAL) == 1 && (millis() - temp) > 5000 && cal == 0){ 
       //Após 3 segundos com o botão pressionado, é dado inicio na calibração
       cal = 1;
       temp = 0;
@@ -300,23 +299,23 @@ void loop() {
         calibracao();
   }else{
     
-        valorDir = analogRead(direction);
-        valorSpd = analogRead(speed);
+        valorDir = analogRead(potPinD);
+        valorSpd = analogRead(potPinV);
 
-        if (valorDir > menorMidLX && dir < maiorMidLX){
+        if (valorDir >= menorMidLX && valorDir <= maiorMidLX){
             valorDir = 0; 
-        }else if (valorDir <= menorMidLX){
-            valorDir = map(valorDir, menorLX, menorMidLX, -100, -1);  
+        }else if (valorDir < menorMidLX){
+            valorDir = map(valorDir, menorLX, menorMidLX, -100, 0);  
         }else {
-            valorDir = map(valorDir, maiorMidLX, maiorLX, 1, 100); 
+            valorDir = map(valorDir, maiorMidLX, maiorLX, 0, 100); 
         }
 
-        if (valorSpd > menorMidRY && vel < maiorMidRY){
+        if (valorSpd >= menorMidRY && valorSpd <= maiorMidRY){
             valorSpd = 0; 
-        }else if (valorSpd <= menorMidRY){
-            valorSpd = map(valorSpd, menorRY, menorMidRY, -100, -1); 
+        }else if (valorSpd < menorMidRY){
+            valorSpd = map(valorSpd, menorRY, menorMidRY, -100, 0); 
         }else {
-            valorSpd = map(valorSpd, maiorMidRY, maiorRY, 1, 100); 
+            valorSpd = map(valorSpd, maiorMidRY, maiorRY, 0, 100); 
         }
 
 
@@ -345,7 +344,9 @@ void loop() {
         Serial.print("\t");
         Serial.print("DIR: ");
         Serial.print(mySpd.dir);
-        Serial.print("\t");
+        Serial.println("\t");
+
+        mySpd.cont = contValidacao; 
 
         // Envia os dados via ESP-NOW
         esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &mySpd, sizeof(mySpd));
@@ -367,13 +368,13 @@ void loop() {
         }
     
         if (contValidacao == 3 && lastValidacao == 1){
-            digital.Write(LED, HIGH);
+            digitalWrite(LED, HIGH);
             contValidacao = 0;
         }
     
         if (contValidacao == 3 && lastValidacao == 0){
-            digital.Write(LED, LOW);
+            digitalWrite(LED, LOW);
             contValidacao = 0;
-        }
+        } 
   }
 }
